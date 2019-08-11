@@ -1,6 +1,7 @@
 //imports
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const api = require("./routes/api");
 
 //initialize app
 const app = require("express")();
@@ -16,6 +17,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.get("/", (req, res) => {
   res.status(200).json({ ok: true });
 });
+
+//apply routes
+app.use("/api", api);
 
 //initialize port
 const port = process.env.PORT || 5000;
