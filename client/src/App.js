@@ -8,15 +8,15 @@ import MainWrapper from "./components/wrappers/MainWrapper";
 import MainMenu from "./components/MainMenu";
 import HangmanImage from "./components/HangmanImage";
 import LetterButton from "./components/buttons/LetterButton";
+import Game from "./components/game/Game";
 
 const App = () => {
   return (
     <Provider store={store}>
       <Router>
         <MainWrapper>
-          <HangmanImage />
           <Route exact path="/" component={MainMenu} />
-          <LetterButton />
+          <Route exact path="/game" component={Game} />
         </MainWrapper>
       </Router>
     </Provider>

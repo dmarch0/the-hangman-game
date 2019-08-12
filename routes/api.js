@@ -14,23 +14,23 @@ router.get("/test", (req, res) => {
 //@desc get words
 //@access public
 router.get("/words", (req, res) => {
-  fs.readFile("../words.json", "utf8", (err, jsonString) => {
+  fs.readFile("./words.json", "utf8", (err, jsonString) => {
     if (err) {
       console.log("File read failed: ", err);
-      return;
+      return res.status(500).json({ error: "Something went wrong" });
     }
-    const { min, max } = req.body;
+    const { min, max } = req.query;
     if (!min || !max) {
       return res.status(400).json({ error: "Min and max are required" });
     }
     const words = JSON.parse(jsonString);
-    if (!words[req.body.min] || !words[req.body.max]) {
+    if (!words[min] || !words[max]) {
       return res.status(400).json({ error: "Restrictions don't match" });
     }
-    const payload = [];
+    let payload = [];
     for (let key in words) {
-      if (key >= req.body.min && key <= req.body.max) {
-        payload.concat(words[key]);
+      if (key >= min && key <= max) {
+        payload = payload.concat(words[key]);
       }
     }
     return res.status(200).json({ payload });
