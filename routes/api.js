@@ -40,7 +40,7 @@ router.get("/words", (req, res) => {
 });
 
 //@route POST /api/users
-//@desc post new user
+//@desc create new user
 //@access public
 router.post("/users", (req, res) => {
   fs.readFile("./users.json", "utf8", (err, jsonString) => {
@@ -93,7 +93,7 @@ router.post("/record", (req, res) => {
   if (!token) {
     return res.status(400).json({ error: "Token is required" });
   }
-  if (!won) {
+  if (!won == 0 && !won == 1) {
     return res.status(400).json({ error: "Data is required" });
   }
   jwt.verify(token, secret, (err, decoded) => {
@@ -116,7 +116,7 @@ router.post("/record", (req, res) => {
       } else {
         newData.lost += 1;
       }
-      newData.winrate = newData.played / newData.won;
+      newData.winrate = newData.won / newData.played;
       data[token] = newData;
 
       fs.writeFile("./users.json", JSON.stringify(data), err => {
@@ -149,6 +149,31 @@ router.post("/verify", (req, res) => {
 //@route GET /api/words
 //@desc get stats
 //@access public
-router.get("/stats", (req, res) => {});
+router.get("/stats", (req, res) => {
+  fs.readFile("./users.json", "utf8", (err, jsonString) => {
+    if (err) {
+      console.log("File read failed: ", err);
+      return res.status(500).json({ error: "Something went wrong" });
+    }
+    const data = JSON.parse(jsonString);
+    const usersList = [];
+    for (let key in data) {
+      usersList.push(data[key]);
+    }
+    const payload = usersList
+      .sort((a, b) => {
+        if (a["played"] < b["played"]) {
+          return 1;
+        }
+        if (a["played"] > b["played"]) {
+          return -1;
+        }
+        return 0;
+      })
+      .slice(0, 10);
+    console.log(payload);
+    return res.status(200).json({ payload });
+  });
+});
 
 module.exports = router;

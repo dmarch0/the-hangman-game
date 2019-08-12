@@ -9,7 +9,7 @@ import LostDisplay from "./LostDisplay";
 import WonDisplay from "./WonDisplay";
 import { fetchWord } from "../../actions/gameActions";
 
-const Game = ({ fetchWord, game }) => {
+const Game = ({ fetchWord, game, user }) => {
   useEffect(() => {
     fetchWord(4, 6);
   }, []);
@@ -21,7 +21,7 @@ const Game = ({ fetchWord, game }) => {
     <div>
       <HangmanImage />
       <WordDisplay data={game.data} />
-      <Keyboard data={game.data} />
+      <Keyboard data={game.data} token={user.token} />
     </div>
   ) : game.status === "won" ? (
     <WonDisplay />
@@ -32,7 +32,8 @@ const Game = ({ fetchWord, game }) => {
 };
 
 const mapStateToProps = state => ({
-  game: state.game
+  game: state.game,
+  user: state.user
 });
 
 export default connect(

@@ -9,4 +9,6 @@ export const GAME_WON = "GAME_WON";
 export const GAME_LOST = "GAME_LOST";
 
 //user actions
-export const SET_USER = "SET_USER";
+export const USER_SET = "USER_SET";
+export const USER_FETCH = "USER_FETCH";
+export const USER_ERROR = "USER_ERROR";

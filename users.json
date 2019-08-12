@@ -1,16 +1,1 @@
-{
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1NjU2MTA1NjV9.Z5LK2vmtDZ2uX_uB-uC8UfEev36oIkwkyB_om83wYNo": {
-    "name": "keks",
-    "played": 1,
-    "won": 1,
-    "lost": 0,
-    "winrate": 1
-  },
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1NjU2MTA3MDB9.efjXrvYHyQjWWgEMt235bch0YIhHImbN1c5NaaNlP0Y": {
-    "name": "mem",
-    "played": 1,
-    "won": 0,
-    "lost": 1,
-    "winrate": 1
-  }
-}
+{}

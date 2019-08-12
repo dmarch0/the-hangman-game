@@ -9,10 +9,10 @@ import MainMenu from "./components/MainMenu";
 import HangmanImage from "./components/HangmanImage";
 import LetterButton from "./components/buttons/LetterButton";
 import Game from "./components/game/Game";
-import { SET_USER } from "./actions/types";
+import { USER_SET } from "./actions/types";
 
 if (localStorage.user) {
-  store.dispatch({ type: SET_USER, payload: localStorage.user });
+  store.dispatch({ type: USER_SET, payload: localStorage.user });
 }
 
 const App = () => {

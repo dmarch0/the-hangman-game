@@ -33,6 +33,4 @@ const StyledWordDisplay = styled(WordDisplay)`
   }
 `;
 
-const mapStateToProps = state => ({ game: state.game });
-
 export default StyledWordDisplay;

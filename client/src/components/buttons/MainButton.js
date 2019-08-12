@@ -1,7 +1,6 @@
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 
-const StyledLink = styled(Link)`
+const StyledMainButton = styled.button`
   display: block;
   font-size: 2rem;
   color: black;
@@ -23,4 +22,4 @@ const StyledLink = styled(Link)`
   }
 `;
 
-export default StyledLink;
+export default StyledMainButton;

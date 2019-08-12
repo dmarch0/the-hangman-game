@@ -5,7 +5,13 @@ export const fetchWord = (min, max) => ({
   payload: { min, max }
 });
 
-export const tryLetter = (letter, currentState, wordByLetters, livesLeft) => ({
+export const tryLetter = (
+  letter,
+  currentState,
+  wordByLetters,
+  livesLeft,
+  token
+) => ({
   type: TRY_LETTER,
-  payload: { letter, currentState, wordByLetters, livesLeft }
+  payload: { letter, currentState, wordByLetters, livesLeft, token }
 });
