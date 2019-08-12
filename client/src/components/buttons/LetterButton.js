@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import cn from "classnames";
 
-const LetterButton = ({ className }) => {
-  const [on, toggle] = useState(false);
+const LetterButton = ({ className, letter, guessed, onLetterClicked }) => {
   return (
-    <div className={className} onClick={() => toggle(!on)}>
-      <div className={cn("background", { succeed: on })} />
-      <div className={cn("letter-container", { "succeed-letter": on })}>A</div>
-      <div className={cn("tick-1", { succeed: on })} />
-      <div className={cn("tick-2", { succeed: on })} />
+    <div className={className} onClick={onLetterClicked}>
+      <div className={cn("background", { [guessed]: guessed })} />
+      <div className={cn("letter-container", { [guessed]: guessed })}>
+        {letter}
+      </div>
+      <div className={cn("tick-1", { [guessed]: guessed })} />
+      <div className={cn("tick-2", { [guessed]: guessed })} />
     </div>
   );
 };
@@ -30,7 +31,11 @@ const StyledLetterButton = styled(LetterButton)`
   border-color: #727272 #ddd #ddd #727272;
   border-radius: 5px;
   transition: all 0.2s ease-in;
-
+  margin: 5px;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
   &:hover {
     border-color: #ddd #727272 #727272 #ddd;
   }
@@ -52,10 +57,10 @@ const StyledLetterButton = styled(LetterButton)`
   .letter-container {
     position: relative;
     z-index: 3;
-    &.failed-letter {
+    &.failed {
       color: white;
     }
-    &.succeed-letter {
+    &.succeed {
       color: black;
     }
   }

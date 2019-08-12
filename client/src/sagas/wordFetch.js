@@ -3,12 +3,12 @@ import { put, call, takeEvery } from "redux-saga/effects";
 import { WORD_FETCH, WORD_SUCCESS, WORD_ERROR } from "../actions/types";
 import axios from "../config/axios";
 
-//watcher saga
+//watcher saga to fetch words
 function* watchFetchWord() {
   yield takeEvery(WORD_FETCH, fetchWordSaga);
 }
 
-//worker saga
+//worker saga to setup new game
 function* fetchWordSaga(action) {
   try {
     const { min, max } = action.payload;
@@ -20,8 +20,8 @@ function* fetchWordSaga(action) {
     const gameData = {
       word: word.toUpperCase(),
       wordByLetters: word.toUpperCase().split(""),
-      currentState: word.split("").map(letter => "_"),
-      alreadyGuessedLetters: [],
+      currentState: word.split("").map(() => "_"),
+      alreadyGuessedLetters: {},
       livesLeft: 10
     };
     yield put({ type: WORD_SUCCESS, payload: gameData });
