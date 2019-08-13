@@ -11,22 +11,28 @@ function* watchFetchWord() {
 //worker saga to setup new game
 function* fetchWordSaga(action) {
   try {
-    const { min, max } = action.payload;
-    const response = yield call(axios.get, "/api/words", {
-      params: { min, max }
-    });
-    const { payload } = response.data;
-    const word = payload[Math.floor(Math.random() * payload.length)];
-    const gameData = {
-      word: word.toUpperCase(),
-      wordByLetters: word.toUpperCase().split(""),
-      currentState: word.split("").map(() => "_"),
-      alreadyGuessedLetters: {},
-      livesLeft: 10
-    };
-    yield put({ type: WORD_SUCCESS, payload: gameData });
+    const { min, max, token } = action.payload;
+    if (token) {
+      const response = yield call(axios.get, "/api/words", {
+        params: { min, max, token }
+      });
+      yield put({ type: WORD_SUCCESS, payload: response.data });
+    } else {
+      const response = yield call(axios.get, "./api/words", {
+        params: {
+          min,
+          max
+        }
+      });
+      yield put({ type: WORD_SUCCESS, payload: response.data });
+    }
   } catch (err) {
-    yield put({ type: WORD_ERROR, payload: err.response.data.error });
+    if ((err.response.data.error = "User not found")) {
+      yield call([localStorage, "removeItem"], "user");
+      window.location.reload();
+    } else {
+      yield put({ type: WORD_ERROR, payload: err.response.data.error });
+    }
   }
 }
 

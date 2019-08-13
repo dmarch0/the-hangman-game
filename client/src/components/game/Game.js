@@ -11,7 +11,11 @@ import { fetchWord } from "../../actions/gameActions";
 
 const Game = ({ fetchWord, game, user }) => {
   useEffect(() => {
-    fetchWord(4, 6);
+    if (user.status === "logged") {
+      fetchWord(4, 6, user.token);
+    } else {
+      fetchWord(4, 6);
+    }
   }, []);
   const renderContent = game.loading ? (
     <div>
@@ -21,7 +25,7 @@ const Game = ({ fetchWord, game, user }) => {
     <div>
       <HangmanImage />
       <WordDisplay data={game.data} />
-      <Keyboard data={game.data} token={user.token} />
+      <Keyboard data={game.data} token={user.token} status={user.status} />
     </div>
   ) : game.status === "won" ? (
     <WonDisplay />

@@ -6,7 +6,7 @@ import letters from "../../config/letters";
 import LetterButton from "../buttons/LetterButton";
 import { tryLetter } from "../../actions/gameActions";
 
-const Keyboard = ({ className, tryLetter, data, token }) => {
+const Keyboard = ({ className, tryLetter, data, token, status }) => {
   const {
     alreadyGuessedLetters,
     currentState,
@@ -24,13 +24,7 @@ const Keyboard = ({ className, tryLetter, data, token }) => {
               key={letter}
               guessed={alreadyGuessedLetters[letter]}
               onLetterClicked={() => {
-                tryLetter(
-                  letter,
-                  currentState,
-                  wordByLetters,
-                  livesLeft,
-                  token
-                );
+                tryLetter(letter, token, status);
               }}
             />
           ))}

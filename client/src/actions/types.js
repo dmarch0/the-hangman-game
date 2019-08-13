@@ -12,3 +12,4 @@ export const GAME_LOST = "GAME_LOST";
 export const USER_SET = "USER_SET";
 export const USER_FETCH = "USER_FETCH";
 export const USER_ERROR = "USER_ERROR";
+export const USER_TEMP = "USER_TEMP";

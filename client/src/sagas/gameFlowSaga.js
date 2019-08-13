@@ -14,41 +14,27 @@ function* gameWatcher() {
 }
 
 function* gameWorker(action) {
-  const {
-    letter,
-    currentState,
-    wordByLetters,
-    livesLeft,
-    token
-  } = action.payload;
-  if (currentState.includes(letter)) {
-    yield cancel();
-  } else {
-    if (wordByLetters.includes(letter)) {
-      yield put({ type: TRY_SUCCESS, payload: letter });
-      if (
-        !currentState
-          .map((current, index) =>
-            wordByLetters[index] === letter ? letter : current
-          )
-          .includes("_")
-      ) {
-        yield put({ type: GAME_WON });
-        console.log(token);
-        if (token) {
-          console.log("i got this far");
-          yield call(axios.post, "/api/record", { won: 1, token });
-        }
-      }
-    } else {
-      yield put({ type: TRY_ERROR, payload: letter });
-      if (livesLeft <= 1) {
-        yield put({ type: GAME_LOST });
-        if (token) {
-          yield call(axios.post, "/api/record", { won: 0, token });
-        }
-      }
+  const { letter, token, status } = action.payload;
+
+  try {
+    const response = yield call(axios.post, "/api/try", {
+      letter,
+      token,
+      user: status
+    });
+    console.log(response.data);
+    if (response.data.error === "User not found") {
+      yield call([localStorage, "removeItem"], "user");
+      window.location.reload();
+    } else if (response.data.status === "in progress") {
+      yield put({ type: TRY_SUCCESS, payload: response.data });
+    } else if (response.data.status === "won") {
+      yield put({ type: GAME_WON });
+    } else if (response.data.status === "lost") {
+      yield put({ type: GAME_LOST });
     }
+  } catch (err) {
+    console.log(err.response.data);
   }
 }
 

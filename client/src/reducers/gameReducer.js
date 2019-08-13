@@ -24,35 +24,8 @@ const gameReducer = (state = initialState, action) => {
       return { ...state, loading: false, error: action.payload };
     case WORD_SUCCESS:
       return { ...state, loading: false, error: null, data: action.payload };
-    case TRY_ERROR:
-      return {
-        ...state,
-        data: {
-          ...state.data,
-          livesLeft: state.data.livesLeft - 1,
-          alreadyGuessedLetters: {
-            ...state.data.alreadyGuessedLetters,
-            [action.payload]: "failed"
-          }
-        }
-      };
     case TRY_SUCCESS:
-      return {
-        ...state,
-        data: {
-          ...state.data,
-          alreadyGuessedLetters: {
-            ...state.data.alreadyGuessedLetters,
-            [action.payload]: "succeed"
-          },
-          currentState: state.data.currentState.map((letter, index) => {
-            return state.data.wordByLetters[index] === action.payload &&
-              letter === "_"
-              ? action.payload
-              : letter;
-          })
-        }
-      };
+      return { ...state, data: action.payload };
     case GAME_LOST:
       return { ...state, status: "lost" };
     case GAME_WON:

@@ -1,17 +1,11 @@
 import { WORD_FETCH, TRY_LETTER } from "./types";
 
-export const fetchWord = (min, max) => ({
+export const fetchWord = (min, max, token) => ({
   type: WORD_FETCH,
-  payload: { min, max }
+  payload: { min, max, token }
 });
 
-export const tryLetter = (
-  letter,
-  currentState,
-  wordByLetters,
-  livesLeft,
-  token
-) => ({
+export const tryLetter = (letter, token, status) => ({
   type: TRY_LETTER,
-  payload: { letter, currentState, wordByLetters, livesLeft, token }
+  payload: { letter, token, status }
 });

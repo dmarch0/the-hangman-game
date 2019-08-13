@@ -58,12 +58,12 @@ router.get("/words", (req, res) => {
           );
           const wordsOfLength = words[String(wordLength)];
           const word =
-            wordLength[Math.floor(Math.random() * wordsOfLength.length)];
+            wordsOfLength[Math.floor(Math.random() * wordsOfLength.length)];
           const newGame = {
             word: word.toUpperCase(),
             wordByLetters: word.toUpperCase().split(""),
             currentState: word.split("").map(letter => "_"),
-            alreadyGuessedLetters: [],
+            alreadyGuessedLetters: {},
             livesLeft: 10
           };
           data[token].game = newGame;
@@ -94,7 +94,7 @@ router.get("/words", (req, res) => {
           word: word.toUpperCase(),
           wordByLetters: word.toUpperCase().split(""),
           currentState: word.split("").map(letter => "_"),
-          alreadyGuessedLetters: [],
+          alreadyGuessedLetters: {},
           livesLeft: 10
         };
         const payload = {
@@ -124,7 +124,6 @@ router.get("/words", (req, res) => {
   });
 });
 
-//TODO: record player stats
 //@route POST /api/try
 //@desc try a letter
 //@access public
@@ -157,7 +156,11 @@ router.post("/try", (req, res) => {
     if (user === "temp") {
       gameData = { ...data["temp"][token] };
     } else {
-      gameData = { ...data[token].game };
+      if (!data[token]) {
+        return res.status(400).json({ error: "User not found" });
+      } else {
+        gameData = { ...data[token].game };
+      }
     }
     if (Object.keys(gameData).length === 0) {
       return res.status(400).json({
@@ -165,11 +168,17 @@ router.post("/try", (req, res) => {
           "Game not found, either token is incorrect or you have to start the game first"
       });
     }
-    if (gameData.alreadyGuessedLetters.includes(letter)) {
-      return res.json({ error: "Letter already tried" });
+    if (Object.keys(gameData.alreadyGuessedLetters).includes(letter)) {
+      const payload = {
+        currentState: gameData.currentState,
+        alreadyGuessedLetters: gameData.alreadyGuessedLetters,
+        livesLeft: gameData.livesLeft,
+        status: "in progress"
+      };
+      return res.json(payload);
     }
     if (gameData.wordByLetters.includes(letter)) {
-      gameData.alreadyGuessedLetters.push(letter);
+      gameData.alreadyGuessedLetters[letter] = "succeed";
       gameData.currentState = gameData.currentState.map(
         (mappedLetter, index) => {
           return gameData.wordByLetters[index] === letter
@@ -183,6 +192,9 @@ router.post("/try", (req, res) => {
           delete data["temp"][token];
         } else {
           delete data[token].game;
+          data[token].played += 1;
+          data[token].won += 1;
+          data[token].winrate = data[token].won / data[token].played;
         }
         fs.writeFile("./users.json", JSON.stringify(data), err => {
           if (err) {
@@ -213,13 +225,16 @@ router.post("/try", (req, res) => {
       }
     } else {
       gameData.livesLeft -= 1;
-      gameData.alreadyGuessedLetters.push(letter);
+      gameData.alreadyGuessedLetters[letter] = "failed";
       //Check loss condition
       if (gameData.livesLeft <= 0) {
         if (user === "temp") {
           delete data["temp"][token];
         } else {
           delete data[token].game;
+          data[token].played += 1;
+          data[token].lost += 1;
+          data[token].winrate = data[token].won / data[token].played;
         }
         fs.writeFile("./users.json", JSON.stringify(data), err => {
           if (err) {
