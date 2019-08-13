@@ -21,7 +21,7 @@ router.get("/words", (req, res) => {
       console.log("File read failed: ", err);
       return res.status(500).json({ error: "Something went wrong" });
     }
-    const { min, max } = req.query;
+    const { min, max, token } = req.query;
     if (!min || !max) {
       return res.status(400).json({ error: "Min and max are required" });
     }
@@ -29,13 +29,226 @@ router.get("/words", (req, res) => {
     if (!words[min] || !words[max]) {
       return res.status(400).json({ error: "Restrictions don't match" });
     }
-    let payload = [];
-    for (let key in words) {
-      if (key >= min && key <= max) {
-        payload = payload.concat(words[key]);
+    fs.readFile("./users.json", "utf8", (err, jsonString) => {
+      if (err) {
+        console.log("File read failed: ", err);
+        return res.status(500).json({ error: "Something went wrong" });
+      }
+      const data = JSON.parse(jsonString);
+      if (token) {
+        //user has a token
+        if (!data[token]) {
+          return res.status(404).json({ error: "User not found" });
+        }
+        if (data[token].game) {
+          //if there is a game, send current game state
+          const game = data[token].game;
+          const payload = {
+            currentState: game.currentState,
+            livesLeft: game.livesLeft,
+            alreadyGuessedLetters: game.alreadyGuessedLetters,
+            user: "logged",
+            status: "in progress"
+          };
+          return res.status(200).json(payload);
+        } else {
+          //if no game, create new game
+          const wordLength = Math.floor(
+            Math.random() * (max - min) + Number(min)
+          );
+          const wordsOfLength = words[String(wordLength)];
+          const word =
+            wordLength[Math.floor(Math.random() * wordsOfLength.length)];
+          const newGame = {
+            word: word.toUpperCase(),
+            wordByLetters: word.toUpperCase().split(""),
+            currentState: word.split("").map(letter => "_"),
+            alreadyGuessedLetters: [],
+            livesLeft: 10
+          };
+          data[token].game = newGame;
+          fs.writeFile("./users.json", JSON.stringify(data), err => {
+            if (err) {
+              console.log("File write error: ", err);
+              return res.status(500).json({ error: "Something went wron" });
+            }
+            return res.status(200).json({
+              currentState: newGame.currentState,
+              alreadyGuessedLetters: newGame.alreadyGuessedLetters,
+              livesLeft: newGame.livesLeft,
+              user: "logged",
+              status: "in progress"
+            });
+          });
+        }
+      } else {
+        //user is not logged in
+        //create temp game, send him the token
+
+        const wordLength =
+          Math.floor(Math.random() * (max - min)) + Number(min);
+        const wordsOfLength = words[String(wordLength)];
+        const word =
+          wordsOfLength[Math.floor(Math.random() * wordsOfLength.length)];
+        const newGame = {
+          word: word.toUpperCase(),
+          wordByLetters: word.toUpperCase().split(""),
+          currentState: word.split("").map(letter => "_"),
+          alreadyGuessedLetters: [],
+          livesLeft: 10
+        };
+        const payload = {
+          currentState: newGame.currentState,
+          alreadyGuessedLetters: newGame.alreadyGuessedLetters,
+          livesLeft: newGame.livesLeft,
+          user: "temp",
+          status: "in progress"
+        };
+        jwt.sign(payload, secret, (err, token) => {
+          if (err) {
+            console.log("Jwt error: ", err);
+            return res.status(500).json({ error: "Something went wron" });
+          }
+          data.temp[token] = newGame;
+          fs.writeFile("./users.json", JSON.stringify(data), err => {
+            if (err) {
+              console.log("File write error: ", err);
+              return res.status(500).json({ error: "Something went wron" });
+            }
+            payload.token = token;
+            return res.status(200).json(payload);
+          });
+        });
+      }
+    });
+  });
+});
+
+//TODO: record player stats
+//@route POST /api/try
+//@desc try a letter
+//@access public
+router.post("/try", (req, res) => {
+  const { user, token } = req.body;
+  let letter = req.body.letter;
+  if (!letter) {
+    return res.status(400).json({ error: "Letter is required" });
+  }
+  if (letter.length > 1) {
+    return res.status(400).json({ error: "Letter must be sinle" });
+  }
+  if (!token) {
+    return res.status(400).json({ error: "Token is required" });
+  }
+  if (!user) {
+    return res.status(400).json({ error: "User status is required" });
+  }
+  if (!(user === "temp" || user === "logged")) {
+    return res.status(400).json({ error: "User status incorrect" });
+  }
+  fs.readFile("./users.json", "utf8", (err, jsonString) => {
+    if (err) {
+      console.log("File read failed: ", err);
+      return res.status(500).json({ error: "Something went wrong" });
+    }
+    const data = JSON.parse(jsonString);
+    letter = letter.toUpperCase();
+    let gameData = {};
+    if (user === "temp") {
+      gameData = { ...data["temp"][token] };
+    } else {
+      gameData = { ...data[token].game };
+    }
+    if (Object.keys(gameData).length === 0) {
+      return res.status(400).json({
+        error:
+          "Game not found, either token is incorrect or you have to start the game first"
+      });
+    }
+    if (gameData.alreadyGuessedLetters.includes(letter)) {
+      return res.json({ error: "Letter already tried" });
+    }
+    if (gameData.wordByLetters.includes(letter)) {
+      gameData.alreadyGuessedLetters.push(letter);
+      gameData.currentState = gameData.currentState.map(
+        (mappedLetter, index) => {
+          return gameData.wordByLetters[index] === letter
+            ? letter
+            : mappedLetter;
+        }
+      );
+      //Check win condition
+      if (!gameData.currentState.includes("_")) {
+        if (user === "temp") {
+          delete data["temp"][token];
+        } else {
+          delete data[token].game;
+        }
+        fs.writeFile("./users.json", JSON.stringify(data), err => {
+          if (err) {
+            console.log("File write error: ", err);
+            return res.status(500).json({ error: "Something went wron" });
+          }
+          return res.status(200).json({ status: "won" });
+        });
+      } else {
+        const payload = {
+          currentState: gameData.currentState,
+          alreadyGuessedLetters: gameData.alreadyGuessedLetters,
+          livesLeft: gameData.livesLeft,
+          status: "in progress"
+        };
+        if (user === "temp") {
+          data["temp"][token] = gameData;
+        } else {
+          data[token].game = gameData;
+        }
+        fs.writeFile("./users.json", JSON.stringify(data), err => {
+          if (err) {
+            console.log("File write error: ", err);
+            return res.status(500).json({ error: "Something went wron" });
+          }
+          return res.status(200).json(payload);
+        });
+      }
+    } else {
+      gameData.livesLeft -= 1;
+      gameData.alreadyGuessedLetters.push(letter);
+      //Check loss condition
+      if (gameData.livesLeft <= 0) {
+        if (user === "temp") {
+          delete data["temp"][token];
+        } else {
+          delete data[token].game;
+        }
+        fs.writeFile("./users.json", JSON.stringify(data), err => {
+          if (err) {
+            console.log("File write error: ", err);
+            return res.status(500).json({ error: "Something went wron" });
+          }
+          return res.status(200).json({ status: "lost" });
+        });
+      } else {
+        if (user === "temp") {
+          data["temp"][token] = gameData;
+        } else {
+          data[token].game = gameData;
+        }
+        const payload = {
+          currentState: gameData.currentState,
+          alreadyGuessedLetters: gameData.alreadyGuessedLetters,
+          livesLeft: gameData.livesLeft,
+          status: "in progress"
+        };
+        fs.writeFile("./users.json", JSON.stringify(data), err => {
+          if (err) {
+            console.log("File write error: ", err);
+            return res.status(500).json({ error: "Something went wron" });
+          }
+          return res.status(200).json(payload);
+        });
       }
     }
-    return res.status(200).json({ payload });
   });
 });
 
