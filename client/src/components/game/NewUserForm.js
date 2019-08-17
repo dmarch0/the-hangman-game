@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import cn from "classnames";
 import { connect } from "react-redux";
 
 import { createNewUser } from "../../actions/userActions";

@@ -201,7 +201,11 @@ router.post("/try", (req, res) => {
             console.log("File write error: ", err);
             return res.status(500).json({ error: "Something went wron" });
           }
-          return res.status(200).json({ status: "won" });
+          return res.status(200).json({
+            status: "won",
+            currentState: gameData.currentState,
+            livesLeft: gameData.livesLeft
+          });
         });
       } else {
         const payload = {
@@ -241,7 +245,13 @@ router.post("/try", (req, res) => {
             console.log("File write error: ", err);
             return res.status(500).json({ error: "Something went wron" });
           }
-          return res.status(200).json({ status: "lost" });
+          return res
+            .status(200)
+            .json({
+              status: "lost",
+              currentState: gameData.currentState,
+              livesLeft: gameData.livesLeft
+            });
         });
       } else {
         if (user === "temp") {

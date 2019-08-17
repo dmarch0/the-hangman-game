@@ -1,1 +1,1 @@
-{"temp":{},"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1NjU2OTUzMTh9.8axRLLaQanxF-fWB72w8LW6ztAgPaGibSb5GreRa6vA":{"name":"daniil2","played":2,"won":2,"lost":0,"winrate":1}}
+{"temp":{},"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1NjU2OTUzMTh9.8axRLLaQanxF-fWB72w8LW6ztAgPaGibSb5GreRa6vA":{"name":"daniil2","played":22,"won":17,"lost":5,"winrate":0.7727272727272727,"game":{"word":"CAKE","wordByLetters":["C","A","K","E"],"currentState":["_","_","_","_"],"alreadyGuessedLetters":{"F":"failed"},"livesLeft":9}}}

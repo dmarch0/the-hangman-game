@@ -3,47 +3,50 @@ import styled from "styled-components";
 import cn from "classnames";
 import { connect } from "react-redux";
 
+import HangmanElement from "./HangmanElement";
+
 const HangmanImage = ({ className, game }) => {
+  const lives = game.data.livesLeft;
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
   }, []);
-  const lives = game.data ? game.data.livesLeft : 10;
+
   return (
     <div className={cn(className, { mounted })}>
       <div>
-        <span className={cn({ displayed: lives <= 6 })}>__________</span>
+        <HangmanElement children="__________" isDisplayed={lives <= 6} />
       </div>
       <div>
-        <span className={cn({ displayed: lives <= 7 })}>|</span>
+        <HangmanElement children="|" isDisplayed={lives <= 7} />
         &emsp;&emsp;&emsp;
-        <span className={cn({ displayed: lives <= 5 })}>|</span>
+        <HangmanElement children="|" isDisplayed={lives <= 5} />
       </div>
       <div>
-        <span className={cn({ displayed: lives <= 7 })}>|</span>
+        <HangmanElement children="|" isDisplayed={lives <= 7} />
         &emsp;&emsp;&emsp;
-        <span className={cn({ displayed: lives <= 4 })}>@</span>
+        <HangmanElement children="@" isDisplayed={lives <= 4} />
       </div>
       <div>
-        <span className={cn({ displayed: lives <= 7 })}>|</span>
+        <HangmanElement children="|" isDisplayed={lives <= 7} />
         &emsp;&emsp;&emsp;
-        <span className={cn({ displayed: lives <= 3 })}>/</span>
-        <span className={cn({ displayed: lives <= 2 })}>|</span>
-        <span className={cn({ displayed: lives <= 1 })}>\</span>
+        <HangmanElement children="/" isDisplayed={lives <= 3} />
+        <HangmanElement children="|" isDisplayed={lives <= 2} />
+        <HangmanElement children="\" isDisplayed={lives <= 1} />
       </div>
       <div>
-        <span className={cn({ displayed: lives <= 7 })}>|</span>
+        <HangmanElement children="|" isDisplayed={lives <= 7} />
         &emsp;&emsp;&emsp;&nbsp;
-        <span className={cn({ displayed: lives <= 0 })}>/\</span>
+        <HangmanElement children="/\" isDisplayed={lives <= 0} />
       </div>
       <div>
-        <span className={cn({ displayed: lives <= 7 })}>|</span>
-        <span className={cn({ displayed: lives <= 8 })}>_________</span>
+        <HangmanElement children="|" isDisplayed={lives <= 7} />
+        <HangmanElement children="_________" isDisplayed={lives <= 8} />
       </div>
       <div>
-        <span className={cn({ displayed: lives <= 9 })}>|</span>
+        <HangmanElement children="|" isDisplayed={lives <= 9} />
         &emsp;&emsp;&emsp;
-        <span className={cn({ displayed: lives <= 9 })}>|</span>
+        <HangmanElement children="|" isDisplayed={lives <= 9} />
       </div>
     </div>
   );
@@ -59,12 +62,7 @@ const StyledImage = styled(HangmanImage)`
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
-  span {
-    opacity: 0.2;
-    &.displayed {
-      opacity: 1;
-    }
-  }
+
   &.mounted {
     transform: translate(0px, 0px);
     opacity: 1;

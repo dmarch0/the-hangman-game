@@ -6,6 +6,7 @@ import NewUserForm from "./NewUserForm";
 const WonDisplay = ({ user }) => {
   const renderContent = user.token ? (
     <div>
+      <h1>You won!</h1>
       <MenuLink to="/game" onClick={() => window.location.reload()}>
         play again
       </MenuLink>
@@ -13,6 +14,7 @@ const WonDisplay = ({ user }) => {
     </div>
   ) : (
     <div>
+      <h1>You won!</h1>
       <NewUserForm />
       <MenuLink to="/game" onClick={() => window.location.reload()}>
         play again

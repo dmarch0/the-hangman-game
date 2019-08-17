@@ -7,12 +7,7 @@ import LetterButton from "../buttons/LetterButton";
 import { tryLetter } from "../../actions/gameActions";
 
 const Keyboard = ({ className, tryLetter, data, token, status }) => {
-  const {
-    alreadyGuessedLetters,
-    currentState,
-    wordByLetters,
-    livesLeft
-  } = data;
+  const { alreadyGuessedLetters } = data;
 
   return (
     <div className={className}>

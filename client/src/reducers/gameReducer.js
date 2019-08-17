@@ -2,9 +2,7 @@ import {
   WORD_FETCH,
   WORD_SUCCESS,
   WORD_ERROR,
-  TRY_LETTER,
   TRY_SUCCESS,
-  TRY_ERROR,
   GAME_LOST,
   GAME_WON
 } from "../actions/types";
@@ -27,9 +25,25 @@ const gameReducer = (state = initialState, action) => {
     case TRY_SUCCESS:
       return { ...state, data: action.payload };
     case GAME_LOST:
-      return { ...state, status: "lost" };
+      return {
+        ...state,
+        status: "lost",
+        data: {
+          ...state.data,
+          currentState: action.payload.currentState,
+          livesLeft: action.payload.livesLeft
+        }
+      };
     case GAME_WON:
-      return { ...state, status: "won" };
+      return {
+        ...state,
+        status: "won",
+        data: {
+          ...state.data,
+          currentState: action.payload.currentState,
+          livesLeft: action.payload.livesLeft
+        }
+      };
     default:
       return state;
   }

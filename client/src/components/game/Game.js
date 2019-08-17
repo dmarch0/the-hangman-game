@@ -28,9 +28,17 @@ const Game = ({ fetchWord, game, user }) => {
       <Keyboard data={game.data} token={user.token} status={user.status} />
     </div>
   ) : game.status === "won" ? (
-    <WonDisplay />
+    <div>
+      <HangmanImage />
+      <WordDisplay data={game.data} />
+      <WonDisplay />
+    </div>
   ) : (
-    <LostDisplay />
+    <div>
+      <HangmanImage />
+      <WordDisplay data={game.data} />
+      <LostDisplay />
+    </div>
   );
   return renderContent;
 };

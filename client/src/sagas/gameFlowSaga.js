@@ -1,12 +1,6 @@
-import { put, takeEvery, cancel, call } from "redux-saga/effects";
+import { put, takeEvery, call } from "redux-saga/effects";
 
-import {
-  TRY_LETTER,
-  TRY_SUCCESS,
-  TRY_ERROR,
-  GAME_LOST,
-  GAME_WON
-} from "../actions/types";
+import { TRY_LETTER, TRY_SUCCESS, GAME_LOST, GAME_WON } from "../actions/types";
 import axios from "../config/axios";
 
 function* gameWatcher() {
@@ -29,9 +23,9 @@ function* gameWorker(action) {
     } else if (response.data.status === "in progress") {
       yield put({ type: TRY_SUCCESS, payload: response.data });
     } else if (response.data.status === "won") {
-      yield put({ type: GAME_WON });
+      yield put({ type: GAME_WON, payload: response.data });
     } else if (response.data.status === "lost") {
-      yield put({ type: GAME_LOST });
+      yield put({ type: GAME_LOST, payload: response.data });
     }
   } catch (err) {
     console.log(err.response.data);
